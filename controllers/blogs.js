@@ -33,7 +33,6 @@ blogsRouter.post('/', async (request, response) => {
     console.log(exception)
     response.status(500).json({ error: 'something went wrong...' })
   }
-
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
