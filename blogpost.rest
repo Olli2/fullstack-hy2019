@@ -1,5 +1,6 @@
 POST http://localhost:3000/api/blogs
 content-type: application/json
+authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3RhYWphIiwiaWQiOiI1YzY2ZTNhMjNhZGY3YjIzMGZmNzMwMTgiLCJpYXQiOjE1NTAyNDg1ODl9.tve_1tz5oe0kDLB1bZuFpXDHdaE7oFfnAL3BdAyAtzA
 
 {
     "title": "asd",
