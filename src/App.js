@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import CreateBlogForm from './components/CreateBlogForm'
@@ -8,22 +7,18 @@ import { useField } from './hooks/useField'
 import { showNotification } from './reducers/notificationReducer'
 import Notification from './components/Notification'
 import { connect } from 'react-redux'
+import BlogList from './components/BlogList'
+import { initializeBlogs } from './reducers/blogReducer'
 
 const App = (props) => {
-    const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
     const [errorMessage, setErrorMessage] = useState(null)
     const username = useField('text')
     const password = useField('text')
-    const title = useField('text')
-    const author = useField('text')
-    const url = useField('text')
 
 
     useEffect(() => {
-        blogService.getAll().then(blogs =>
-            setBlogs( blogs )
-        )
+        props.initializeBlogs()
     }, [])
 
     useEffect(() => {
@@ -56,20 +51,6 @@ const App = (props) => {
         setUser(null)
     }
 
-    const handleCreate = async (event) => {
-        event.preventDefault()
-        blogService.setToken(user.token)
-        const blog = {
-            title: title.value,
-            author: author.value,
-            url: url.value,
-            likes: 2,
-        }
-        const createdBlog = await blogService.createNew(blog)
-        setBlogs(blogs.concat(createdBlog))
-        props.showNotification(createdBlog.title)
-    }
-
     const loginForm = () => (
         <div>
             <h2>Kirjaudu sisään</h2>
@@ -99,15 +80,6 @@ const App = (props) => {
         </div>
     )
 
-    const blogForm = () => (
-        <div>
-            <h2>blogs</h2>
-            {blogs.map(blog =>
-                <Blog key={blog._id} blog={blog} />
-            )}
-        </div>
-    )
-
     return (
         <div>
             { user === null ?
@@ -117,20 +89,14 @@ const App = (props) => {
                     <button onClick={ handleLogout }> Kirjaudu ulos </button>
                     <Notification/>
                     <Togglable buttonLabel='Luo blogi'>
-                        <CreateBlogForm handleCreate={handleCreate} title={title} author={author} url={url}/>
+                        <CreateBlogForm user={user}/>
                     </Togglable>
-                    { blogForm() }
+                    <BlogList/>
                 </div>
             }
         </div>
     )
 }
 
-const mapStateToProps = (state) => {    
-    return {
-      notification: state.notification,
-    }
-  }
-
-const connectedApp = connect(mapStateToProps, { showNotification })(App)
+const connectedApp = connect(null, { showNotification, initializeBlogs })(App)
 export default connectedApp

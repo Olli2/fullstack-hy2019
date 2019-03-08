@@ -1,28 +1,40 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { createBlog } from '../reducers/blogReducer'
+import { showNotification } from '../reducers/notificationReducer'
+import blogService from '../services/blogs'
 
-const CreateBlogForm = ({ handleCreate, title, author, url }) => {
-    delete title['reset']
-    delete author['reset']
-    delete url['reset']
+const CreateBlogForm = (props) => {
+
+    const addBlog = async (event) => {
+        event.preventDefault()
+        blogService.setToken(props.user.token)
+        const blog = {
+            title: event.target.title.value,
+            author: event.target.author.value,
+            url: event.target.url.value,
+            likes: 0,
+        }
+        const createdBlog = await blogService.createNew(blog)
+        props.createBlog(createdBlog)
+        props.showNotification(createdBlog.title)
+    }
 
     return (
         <div>
-
             <h2>Uusi blogi</h2>
-
-            <form onSubmit={ handleCreate }>
+            <form onSubmit={ addBlog }>
                 <div>
                     otsikko:
-                    <input name="title" {...title} />
+                    <input name="title" />
                 </div>
                 <div>
                     kirjoittaja:
-                    <input name="author" {...author}/>
+                    <input name="author"/>
                 </div>
                 <div>
                     url:
-                    <input name="url" {...url}/>
+                    <input name="url"/>
                 </div>
                 <button type="submit"> Luo </button>
             </form>
@@ -30,11 +42,5 @@ const CreateBlogForm = ({ handleCreate, title, author, url }) => {
     )
 }
 
-CreateBlogForm.propTypes = {
-    title: PropTypes.object.isRequired,
-    author: PropTypes.object.isRequired,
-    url: PropTypes.object.isRequired,
-    handleCreate: PropTypes.func.isRequired,
-}
-
-export default CreateBlogForm
+const connectedBlogForm = connect(null, { createBlog, showNotification })(CreateBlogForm)
+export default connectedBlogForm
